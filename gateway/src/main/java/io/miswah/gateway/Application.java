@@ -1,13 +1,13 @@
-package io.miswah.kabootar;
+package io.kabootar.gateway;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class KabootarApplication {
+public class Application {
 
 	public static void main(String[] args) {
-		SpringApplication.run(KabootarApplication.class, args);
+		SpringApplication.run(Application.class, args);
 	}
 
 }
