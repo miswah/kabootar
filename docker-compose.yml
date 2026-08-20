@@ -1,8 +1,8 @@
 services:
   # Database Container (MariaDB)
-  mariadb-db:
+  kabootar-db:
     image: mariadb:10.11
-    container_name: mariadb-db
+    container_name: kabootar-db
     ports:
       - "3307:3306"
     environment:
@@ -22,11 +22,11 @@ services:
     build: ./admin
     container_name: admin-service
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:mariadb://mariadb-db:3306/customer_db?createDatabaseIfNotExist=true&retriesAllDown=10&retryInterval=2
+      - SPRING_DATASOURCE_URL=jdbc:mariadb://kabootar-db:3306/customer_db?createDatabaseIfNotExist=true&retriesAllDown=10&retryInterval=2
       - SPRING_DATASOURCE_USERNAME=root
       - SPRING_DATASOURCE_PASSWORD=rootpassword
     depends_on:
-      mariadb-db:
+      kabootar-db:
         condition: service_healthy
     networks:
       - kabootar-network
@@ -36,11 +36,11 @@ services:
     build: ./alert
     container_name: alert-service
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:mariadb://mariadb-db:3306/customer_db?createDatabaseIfNotExist=true&retriesAllDown=10&retryInterval=2
+      - SPRING_DATASOURCE_URL=jdbc:mariadb://kabootar-db:3306/customer_db?createDatabaseIfNotExist=true&retriesAllDown=10&retryInterval=2
       - SPRING_DATASOURCE_USERNAME=root
       - SPRING_DATASOURCE_PASSWORD=rootpassword
     depends_on:
-      mariadb-db:
+      kabootar-db:
         condition: service_healthy
     networks:
       - kabootar-network
@@ -50,11 +50,11 @@ services:
     build: ./common
     container_name: common-service
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:mariadb://mariadb-db:3306/customer_db?createDatabaseIfNotExist=true&retriesAllDown=10&retryInterval=2
+      - SPRING_DATASOURCE_URL=jdbc:mariadb://kabootar-db:3306/customer_db?createDatabaseIfNotExist=true&retriesAllDown=10&retryInterval=2
       - SPRING_DATASOURCE_USERNAME=root
       - SPRING_DATASOURCE_PASSWORD=rootpassword
     depends_on:
-      mariadb-db:
+      kabootar-db:
         condition: service_healthy
     networks:
       - kabootar-network
@@ -64,11 +64,11 @@ services:
     build: ./configuration
     container_name: configuration-service
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:mariadb://mariadb-db:3306/customer_db?createDatabaseIfNotExist=true&retriesAllDown=10&retryInterval=2
+      - SPRING_DATASOURCE_URL=jdbc:mariadb://kabootar-db:3306/customer_db?createDatabaseIfNotExist=true&retriesAllDown=10&retryInterval=2
       - SPRING_DATASOURCE_USERNAME=root
       - SPRING_DATASOURCE_PASSWORD=rootpassword
     depends_on:
-      mariadb-db:
+      kabootar-db:
         condition: service_healthy
     networks:
       - kabootar-network
@@ -78,11 +78,11 @@ services:
     build: ./gateway
     container_name: gateway-service
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:mariadb://mariadb-db:3306/customer_db?createDatabaseIfNotExist=true&retriesAllDown=10&retryInterval=2
+      - SPRING_DATASOURCE_URL=jdbc:mariadb://kabootar-db:3306/customer_db?createDatabaseIfNotExist=true&retriesAllDown=10&retryInterval=2
       - SPRING_DATASOURCE_USERNAME=root
       - SPRING_DATASOURCE_PASSWORD=rootpassword
     depends_on:
-      mariadb-db:
+      kabootar-db:
         condition: service_healthy
     networks:
       - kabootar-network
@@ -92,11 +92,11 @@ services:
     build: ./monitor
     container_name: monitor-service
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:mariadb://mariadb-db:3306/customer_db?createDatabaseIfNotExist=true&retriesAllDown=10&retryInterval=2
+      - SPRING_DATASOURCE_URL=jdbc:mariadb://kabootar-db:3306/customer_db?createDatabaseIfNotExist=true&retriesAllDown=10&retryInterval=2
       - SPRING_DATASOURCE_USERNAME=root
       - SPRING_DATASOURCE_PASSWORD=rootpassword
     depends_on:
-      mariadb-db:
+      kabootar-db:
         condition: service_healthy
     networks:
       - kabootar-network
@@ -106,11 +106,11 @@ services:
     build: ./simulator
     container_name: simulator-service
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:mariadb://mariadb-db:3306/customer_db?createDatabaseIfNotExist=true&retriesAllDown=10&retryInterval=2
+      - SPRING_DATASOURCE_URL=jdbc:mariadb://kabootar-db:3306/customer_db?createDatabaseIfNotExist=true&retriesAllDown=10&retryInterval=2
       - SPRING_DATASOURCE_USERNAME=root
       - SPRING_DATASOURCE_PASSWORD=rootpassword
     depends_on:
-      mariadb-db:
+      kabootar-db:
         condition: service_healthy
     networks:
       - kabootar-network
@@ -131,3 +131,6 @@ services:
 networks:
   kabootar-network:
     driver: bridge
+
+volumes:
+  redis_data:
