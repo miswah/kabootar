@@ -1,0 +1,133 @@
+services:
+  # Database Container (MariaDB)
+  mariadb-db:
+    image: mariadb:10.11
+    container_name: mariadb-db
+    ports:
+      - "3307:3306"
+    environment:
+      MARIADB_ROOT_PASSWORD: rootpassword
+    volumes:
+      - ./mariadb/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ["CMD", "mariadb-admin", "--host=127.0.0.1", "--user=root", "--password=rootpassword", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - kabootar-network
+
+#1 Admin Panel
+  admin-service:
+    build: ./admin
+    container_name: admin-service
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mariadb://mariadb-db:3306/customer_db?createDatabaseIfNotExist=true&retriesAllDown=10&retryInterval=2
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=rootpassword
+    depends_on:
+      mariadb-db:
+        condition: service_healthy
+    networks:
+      - kabootar-network
+
+#2 Alert System
+  alert-service:
+    build: ./alert
+    container_name: alert-service
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mariadb://mariadb-db:3306/customer_db?createDatabaseIfNotExist=true&retriesAllDown=10&retryInterval=2
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=rootpassword
+    depends_on:
+      mariadb-db:
+        condition: service_healthy
+    networks:
+      - kabootar-network
+
+# 3 Common Services
+  common-service:
+    build: ./common
+    container_name: common-service
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mariadb://mariadb-db:3306/customer_db?createDatabaseIfNotExist=true&retriesAllDown=10&retryInterval=2
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=rootpassword
+    depends_on:
+      mariadb-db:
+        condition: service_healthy
+    networks:
+      - kabootar-network
+
+# 4 Configuration Services
+  configuration-service:
+    build: ./configuration
+    container_name: configuration-service
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mariadb://mariadb-db:3306/customer_db?createDatabaseIfNotExist=true&retriesAllDown=10&retryInterval=2
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=rootpassword
+    depends_on:
+      mariadb-db:
+        condition: service_healthy
+    networks:
+      - kabootar-network
+
+# 5 Gateway Services
+  gateway-service:
+    build: ./gateway
+    container_name: gateway-service
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mariadb://mariadb-db:3306/customer_db?createDatabaseIfNotExist=true&retriesAllDown=10&retryInterval=2
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=rootpassword
+    depends_on:
+      mariadb-db:
+        condition: service_healthy
+    networks:
+      - kabootar-network
+
+# 6 Monitor Service
+  monitor-service:
+    build: ./monitor
+    container_name: monitor-service
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mariadb://mariadb-db:3306/customer_db?createDatabaseIfNotExist=true&retriesAllDown=10&retryInterval=2
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=rootpassword
+    depends_on:
+      mariadb-db:
+        condition: service_healthy
+    networks:
+      - kabootar-network
+
+# 7 Simulator Service
+  simulator-service:
+    build: ./simulator
+    container_name: simulator-service
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mariadb://mariadb-db:3306/customer_db?createDatabaseIfNotExist=true&retriesAllDown=10&retryInterval=2
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=rootpassword
+    depends_on:
+      mariadb-db:
+        condition: service_healthy
+    networks:
+      - kabootar-network
+
+# 8 Redis
+  redis:
+    image: redis:7.4-alpine
+    container_name: my-redis
+    restart: always
+    ports:
+      - "6379:6379"
+    command: redis-server --requirepass rootpassword --appendonly yes
+    volumes:
+      - redis_data:/data
+    networks:
+      - kabootar-network
+
+networks:
+  kabootar-network:
+    driver: bridge
