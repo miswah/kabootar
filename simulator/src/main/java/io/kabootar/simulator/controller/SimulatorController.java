@@ -5,8 +5,13 @@ import io.kabootar.simulator.dto.request.SimulatorRequestDTO;
 import io.kabootar.simulator.dto.response.SimulatorResponseDTO;
 import io.kabootar.simulator.service.SimulatorService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.RejectedExecutionException;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -23,9 +28,30 @@ public class SimulatorController {
     @GetMapping("/instance")
     public ResponseEntity<SimulatorResponseDTO> getInstance(@RequestParam(defaultValue = "0") Integer fixedDelayMs, @RequestParam(defaultValue = "0") Integer jitterMs,
                                                             @RequestParam(defaultValue = "0.0") Double errorPercentage, @RequestParam(defaultValue = "0") Integer errorStatus,
-                                                            @RequestParam(defaultValue = "false") boolean outage, @RequestParam(defaultValue = "0") Integer maximumConcurrency, @RequestHeader(value="X-Correlation-ID", defaultValue = "demo-header") String correlationId) throws InterruptedException {
+                                                            @RequestParam(defaultValue = "false") boolean outage, @RequestParam(defaultValue = "0") Integer maximumConcurrency, @RequestHeader(value="X-Correlation-ID", defaultValue = "demo-header") String correlationId) {
         SimulatorRequestDTO dto = new SimulatorRequestDTO(fixedDelayMs, jitterMs, errorPercentage, errorStatus, outage, maximumConcurrency, correlationId);
-        return ResponseEntity.ok(this.service.getInstance(dto));
+
+        try {
+            Future<SimulatorResponseDTO> future = this.service.submit(dto);
+            SimulatorResponseDTO result = future.get();
+
+            return ResponseEntity.ok(result);
+        } catch (RejectedExecutionException e) {
+            return ResponseEntity
+                    .status(HttpStatus.TOO_MANY_REQUESTS)
+                    .build();
+
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .build();
+
+        } catch (ExecutionException e) {
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .build();
+        }
     }
 
 }
