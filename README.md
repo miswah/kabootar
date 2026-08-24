@@ -41,7 +41,7 @@ Run the following from the project root to verify all modules build correctly:
 
 ```bash
 # Build all modules
-mvn clean install
+./build-and-run.sh
 ```
 
 ### Starting Services
@@ -57,3 +57,6 @@ We maintain a performance-first approach. Run tests via the performance-tests mo
 ```bash
 mvn -pl performance-tests test
 ```
+
+## Docker Containers
+all the services are based on docker containers the details could be found at docker-compose.yml 
