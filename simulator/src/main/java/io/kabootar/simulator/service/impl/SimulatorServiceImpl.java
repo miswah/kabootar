@@ -29,9 +29,9 @@ public class SimulatorServiceImpl implements SimulatorService {
         }
 
         if(ErrorPercentageCalculator.shouldFail(dto.errorPercentage())){
-            throw new IntentionalFailureException("Injected failure");
+            throw new IntentionalFailureException("Injected failure", dto.errorStatus());
         }
 
-
+        return null;
     }
 }

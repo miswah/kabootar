@@ -9,7 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/simulator/api/v1")
+@RequestMapping("/api/v1")
 public class SimulatorController {
 
     private final SimulatorService service;
@@ -21,9 +21,9 @@ public class SimulatorController {
 
 
     @GetMapping("/instance")
-    public ResponseEntity<SimulatorResponseDTO> getInstance(@RequestParam Integer fixedDelayMs, @RequestParam Integer jitterMs,
-                                                            @RequestParam Integer errorPercentage, @RequestParam Integer errorStatus,
-                                                            @RequestParam boolean outage, @RequestParam Integer maximumConcurrency, @RequestHeader("X-Correlation-ID") String correlationId){
+    public ResponseEntity<SimulatorResponseDTO> getInstance(@RequestParam(defaultValue = "0") Integer fixedDelayMs, @RequestParam(defaultValue = "0") Integer jitterMs,
+                                                            @RequestParam(defaultValue = "0.0") Double errorPercentage, @RequestParam(defaultValue = "0") Integer errorStatus,
+                                                            @RequestParam(defaultValue = "false") boolean outage, @RequestParam(defaultValue = "0") Integer maximumConcurrency, @RequestHeader(value="X-Correlation-ID", defaultValue = "demo-header") String correlationId) throws InterruptedException {
         SimulatorRequestDTO dto = new SimulatorRequestDTO(fixedDelayMs, jitterMs, errorPercentage, errorStatus, outage, maximumConcurrency, correlationId);
         return ResponseEntity.ok(this.service.getInstance(dto));
     }

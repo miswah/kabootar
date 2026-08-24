@@ -15,7 +15,7 @@ public class GlobalExceptionHandler {
             IntentionalFailureException ex) {
 
         return ResponseEntity
-                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .status(ex.getErrorCode())
                 .body(ex.getMessage());
     }
 }
