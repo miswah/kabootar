@@ -2,12 +2,16 @@ package io.kabootar.simulator.service.impl;
 
 import io.kabootar.simulator.dto.request.SimulatorRequestDTO;
 import io.kabootar.simulator.dto.response.SimulatorResponseDTO;
+import io.kabootar.simulator.enums.ConfigKey;
 import io.kabootar.simulator.exceptions.IntentionalFailureException;
 import io.kabootar.simulator.exceptions.QueueFullException;
+import io.kabootar.simulator.service.interfaces.ConfigService;
 import io.kabootar.simulator.service.interfaces.SimulatorService;
 import io.kabootar.simulator.utilities.ErrorPercentageCalculator;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 import java.util.concurrent.*;
 
@@ -15,9 +19,17 @@ import java.util.concurrent.*;
 public class SimulatorServiceImpl implements SimulatorService {
     private final ThreadPoolExecutor executor;
 
-    public SimulatorServiceImpl(){
+    private final ConfigService configService;
+    private final ServiceProperties propertyService;
+
+    @Autowired
+    public SimulatorServiceImpl(ConfigService configService, ServiceProperties propertyService){
+        this.configService = configService;
+        this.propertyService = propertyService;
+
         int maxConcurrency = 5; // should be overridden from properties??
-        int queueSize = 1;
+        String MAXIMUMCONCURRENCY = this.configService.get(ConfigKey.MAXIMUMCONCURRENCY);
+        int queueSize = MAXIMUMCONCURRENCY != null ? Integer.parseInt(MAXIMUMCONCURRENCY) : 99;
 
         this.executor = new ThreadPoolExecutor(
                 maxConcurrency,          // core pool size
@@ -30,10 +42,10 @@ public class SimulatorServiceImpl implements SimulatorService {
     }
 
     @Override
-    public Future<SimulatorResponseDTO> submit(SimulatorRequestDTO dto) {
+    public Future<SimulatorResponseDTO> submit(String correctionId) {
         try {
             return executor.submit(() -> {
-                return this.getInstance(dto);
+                return this.getInstance(correctionId);
             });
         } catch (RejectedExecutionException e) {
             throw new QueueFullException(
@@ -43,22 +55,24 @@ public class SimulatorServiceImpl implements SimulatorService {
     }
 
 
-    private SimulatorResponseDTO getInstance(SimulatorRequestDTO dto) throws InterruptedException {
-        String correlationId = dto.correlationId().equals("demo-header") ? UUID.randomUUID().toString() : dto.correlationId();
+    private SimulatorResponseDTO getInstance(String correlationIdX) throws InterruptedException {
+        String correlationId = correlationIdX.equals("demo-header") ? UUID.randomUUID().toString() : correlationIdX;
 
-        int fixedDelayMs = dto.fixedDelaysMs();
-        int jitterMs = dto.jitterMs();
+        int fixedDelayMs = this.configService.get(ConfigKey.FIXEDDELAYSMS) != null ? Integer.parseInt(this.configService.get(ConfigKey.FIXEDDELAYSMS)) : 0;
+
+        int jitterMs = this.configService.get(ConfigKey.JITTERMS) != null ? Integer.parseInt(this.configService.get(ConfigKey.JITTERMS)) : 0;
 
         if(fixedDelayMs != 0 || jitterMs != 0){
             int randomDelayMs = ThreadLocalRandom.current().nextInt(0, jitterMs + 1);
             Thread.sleep(fixedDelayMs + randomDelayMs);
         }
 
-        if(ErrorPercentageCalculator.shouldFail(dto.errorPercentage())){
-            throw new IntentionalFailureException("Injected failure", dto.errorStatus());
+        double errorRate = this.configService.get(ConfigKey.ERRORPERCENTAGE) != null ? Double.parseDouble(this.configService.get(ConfigKey.ERRORPERCENTAGE)) : 0.0;
+        if(ErrorPercentageCalculator.shouldFail(errorRate)){
+            throw new IntentionalFailureException("Injected failure", (int) errorRate);
         }
-
-        return null;
+        return new SimulatorResponseDTO(this.propertyService.getServiceName(), this.propertyService.getRegionName(),
+                this.propertyService.getInstanceName(), correlationId, LocalDateTime.now().toString());
     }
 
     public void setConcurrency(int concurrency) {

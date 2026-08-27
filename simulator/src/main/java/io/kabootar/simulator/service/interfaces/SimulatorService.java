@@ -8,5 +8,5 @@ import java.util.concurrent.Future;
 
 @Service
 public interface SimulatorService {
-    public Future<SimulatorResponseDTO> submit(SimulatorRequestDTO dto) throws InterruptedException;
+    Future<SimulatorResponseDTO> submit(String correlationId) throws InterruptedException;
 }
