@@ -2,7 +2,6 @@ package io.kabootar.simulator.controller;
 
 
 import io.kabootar.simulator.dto.request.ConfigRequestDTO;
-import io.kabootar.simulator.dto.request.SimulatorRequestDTO;
 import io.kabootar.simulator.dto.response.SimulatorResponseDTO;
 import io.kabootar.simulator.enums.ConfigKey;
 import io.kabootar.simulator.service.interfaces.ConfigService;

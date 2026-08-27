@@ -1,6 +1,5 @@
 package io.kabootar.simulator.service.impl;
 
-import io.kabootar.simulator.dto.request.SimulatorRequestDTO;
 import io.kabootar.simulator.dto.response.SimulatorResponseDTO;
 import io.kabootar.simulator.enums.ConfigKey;
 import io.kabootar.simulator.exceptions.IntentionalFailureException;
