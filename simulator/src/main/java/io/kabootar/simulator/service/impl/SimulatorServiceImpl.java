@@ -4,7 +4,7 @@ import io.kabootar.simulator.dto.request.SimulatorRequestDTO;
 import io.kabootar.simulator.dto.response.SimulatorResponseDTO;
 import io.kabootar.simulator.exceptions.IntentionalFailureException;
 import io.kabootar.simulator.exceptions.QueueFullException;
-import io.kabootar.simulator.service.SimulatorService;
+import io.kabootar.simulator.service.interfaces.SimulatorService;
 import io.kabootar.simulator.utilities.ErrorPercentageCalculator;
 import org.springframework.stereotype.Service;
 

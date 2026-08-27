@@ -1,4 +1,4 @@
-package io.kabootar.simulator.service;
+package io.kabootar.simulator.service.interfaces;
 
 import io.kabootar.simulator.dto.request.SimulatorRequestDTO;
 import io.kabootar.simulator.dto.response.SimulatorResponseDTO;
