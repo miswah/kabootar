@@ -2,8 +2,8 @@
 
 <configuration>
 
-    <property name="LOG_DIR" value="/logs"/>
-    <property name="LOG_FILE" value="${LOG_DIR}/application.log"/>
+    <property name="LOG_DIR" value="logs"/>
+    <property name="LOG_FILE" value="${LOG_DIR}/simulator.log"/>
 
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
