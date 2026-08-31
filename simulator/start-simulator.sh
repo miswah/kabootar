@@ -19,6 +19,7 @@ sudo docker run -d \
   -e APP_SIMULATOR_INSTANCE_NAME="demo-mumbai-01" \
   -e APP_SIMULATOR_SERVICE_NAME="simulator-1" \
   -e SERVER_PORT=8080 \
+  -e LOG_DIR: /app/logs \
   "$IMAGE_NAME"
 
 
@@ -32,6 +33,7 @@ sudo docker run -d \
   -e APP_SIMULATOR_INSTANCE_NAME="demo-singapore-01" \
   -e APP_SIMULATOR_SERVICE_NAME="simulator-2" \
   -e SERVER_PORT=8080 \
+  -e LOG_DIR: /app/logs \
   "$IMAGE_NAME"
 
 
@@ -45,6 +47,7 @@ sudo docker run -d \
   -e APP_SIMULATOR_INSTANCE_NAME="demo-frankfurt-01" \
   -e APP_SIMULATOR_SERVICE_NAME="simulator-3" \
   -e SERVER_PORT=8080 \
+  -e LOG_DIR: /app/logs \
   "$IMAGE_NAME"
 
 
