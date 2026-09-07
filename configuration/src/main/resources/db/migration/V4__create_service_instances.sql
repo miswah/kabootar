@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS service_instance (
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
     CONSTRAINT fk_service_instance_service
-        FOREIGN KEY (service_id) REFERENCES service(id),
+        FOREIGN KEY (service_id) REFERENCES services(id),
 
     CONSTRAINT fk_service_instance_region
         FOREIGN KEY (region_id) REFERENCES region(id)
