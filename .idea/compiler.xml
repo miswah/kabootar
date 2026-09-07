@@ -6,10 +6,9 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="common" />
         <module name="configuration" />
       </profile>
-      <profile name="Annotation profile for admin" enabled="true">
+      <profile name="Annotation profile for common" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
@@ -19,6 +18,7 @@
         <module name="admin" />
         <module name="monitor" />
         <module name="simulator" />
+        <module name="common" />
         <module name="kabootar" />
         <module name="alert" />
       </profile>
