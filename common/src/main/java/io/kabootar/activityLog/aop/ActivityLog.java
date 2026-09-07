@@ -1,4 +1,4 @@
-package io.kabootar.annotation;
+package io.kabootar.activityLog.aop;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

@@ -1,6 +1,13 @@
-package io.kabootar.annotation;
+package io.kabootar.activityLog.aop;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import io.kabootar.activityLog.dto.ActivityLogEntry;
+import io.kabootar.activityLog.interfaces.ActivityLogService;
+import io.kabootar.activityLog.models.ActivityLogModel;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.tomcat.util.net.openssl.ciphers.Authentication;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -8,13 +15,22 @@ import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.core.DefaultParameterNameDiscoverer;
 import org.springframework.core.ParameterNameDiscoverer;
+import org.springframework.expression.Expression;
 import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
+import org.springframework.expression.spel.support.StandardEvaluationContext;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.security.Principal;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 @Aspect
 @Component
@@ -46,16 +62,17 @@ public class ActivityLogAspect {
         long start = System.currentTimeMillis();
         ActivityLogEntry entry = new ActivityLogEntry();
 
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth != null && auth.isAuthenticated()) {
-            UserModel user = (UserModel) auth.getPrincipal();
-            entry.setUserId(auth.getName());
-            entry.setUserName(user.getName());
-            entry.setUserRole(user.getRole());
-        } else {
-            entry.setUserId("anonymousUser");
-        }
-        entry.setTraceId( MDC.get("traceId"));
+        //TODO enable this after security implementation
+//        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+//        if (auth != null && auth.isAuthenticated()) {
+//            UserModel user = (UserModel) auth.getPrincipal();
+//            entry.setUserId(auth.getName());
+//            entry.setUserName(user.getName());
+//            entry.setUserRole(user.getRole());
+//        } else {
+//            entry.setUserId("anonymousUser");
+//        }
+//        entry.setTraceId( MDC.get("traceId"));
 
         // 2) get request info if present
         ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
@@ -151,7 +168,6 @@ public class ActivityLogAspect {
         model.setExtra(entry.getExtra());
         model.setCreatedBy(entry.getCreatedBy());
         model.setUserName(entry.getUserName());
-        model.setUserRole(entry.getUserRole());
         model.setTraceId(entry.getTraceId());
         return model;
     }

@@ -1,14 +1,13 @@
-package io.kabootar.activityLog.models;
+package io.kabootar.utilities.models;
 
 
-import jakarta.persistence.Column;
-import jakarta.persistence.EntityListeners;
-import jakarta.persistence.MappedSuperclass;
-import jakarta.persistence.TemporalType;
+import jakarta.persistence.*;
 import lombok.Data;
-import org.hibernate.annotations.Temporal;
+import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.util.Date;
 
