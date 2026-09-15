@@ -100,6 +100,9 @@ services:
         condition: service_healthy
     networks:
       - kabootar-network
+    ports:
+      - "8082:8082"
+    
 
 # 7 Redis
   redis:
@@ -113,6 +116,20 @@ services:
       - redis_data:/data
     networks:
       - kabootar-network
+  
+  prometheus:
+    image: prom/prometheus
+    container_name: kabootar-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    depends_on:
+      - simulator-service
+    networks:
+      - kabootar-network
+
+
 
 networks:
   kabootar-network:
