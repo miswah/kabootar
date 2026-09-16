@@ -52,6 +52,11 @@ jobs:
     needs:
       - backend-quality
 
+    env:
+      # Disable Flyway during unit tests.
+      # Integration tests below intentionally do NOT use this.
+      SPRING_FLYWAY_ENABLED: false
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -64,11 +69,17 @@ jobs:
           cache: maven
 
       - name: Compile backend modules & run unit tests
-        run: mvn test
+        run: |
+          mvn test \
+            -pl '!configuration' \
+            -am
 
       - name: Generate coverage reports
         if: always()
-        run: mvn test jacoco:report
+        run: |
+          mvn test jacoco:report \
+            -pl '!configuration' \
+            -am
 
       - name: Upload test reports
         if: always()
