@@ -45,21 +45,7 @@ services:
     networks:
       - kabootar-network
 
-# 3 Common Services
-  common-service:
-    build: ./common
-    container_name: common-service
-    environment:
-      - SPRING_DATASOURCE_URL=jdbc:mariadb://kabootar-db:3306/kabootar_db?createDatabaseIfNotExist=true&retriesAllDown=10&retryInterval=2
-      - SPRING_DATASOURCE_USERNAME=root
-      - SPRING_DATASOURCE_PASSWORD=rootpassword
-    depends_on:
-      kabootar-db:
-        condition: service_healthy
-    networks:
-      - kabootar-network
-
-# 4 Configuration Services
+# 3 Configuration Services
   configuration-service:
     build: ./configuration
     container_name: configuration-service
@@ -73,7 +59,7 @@ services:
     networks:
       - kabootar-network
 
-# 5 Gateway Services
+# 4 Gateway Services
   gateway-service:
     build: ./gateway
     container_name: gateway-service
@@ -87,7 +73,7 @@ services:
     networks:
       - kabootar-network
 
-# 6 Monitor Service
+# 5 Monitor Service
   monitor-service:
     build: ./monitor
     container_name: monitor-service
@@ -101,7 +87,7 @@ services:
     networks:
       - kabootar-network
 
-# 7 Simulator Service
+# 6 Simulator Service
   simulator-service:
     build: ./simulator
     container_name: simulator-service
@@ -115,7 +101,7 @@ services:
     networks:
       - kabootar-network
 
-# 8 Redis
+# 7 Redis
   redis:
     image: redis:7.4-alpine
     container_name: my-redis
