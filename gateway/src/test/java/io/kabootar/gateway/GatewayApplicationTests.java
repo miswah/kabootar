@@ -1,10 +1,10 @@
-package io.miswah.kabootar;
+package io.kabootar.gateway;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class KabootarApplicationTests {
+class GatewayApplicationTests {
 
 	@Test
 	void contextLoads() {
