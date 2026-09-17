@@ -192,9 +192,9 @@ jobs:
       fail-fast: false
       matrix:
         service:
-          - configuration-service
-          - gateway-service
-          - admin-service
+          - configuration
+          - gateway
+          - admin
 
     permissions:
       contents: read
