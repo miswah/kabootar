@@ -120,16 +120,19 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
-			<plugin>
-				<groupId>org.flywaydb</groupId>
-				<artifactId>flyway-maven-plugin</artifactId>
-				<version>11.8.0</version>
-				<configuration>
-					<locations>
-						<location>classpath:db/migration</location>
-					</locations>
-				</configuration>
-			</plugin>
+<!--			<plugin>-->
+<!--				<groupId>org.flywaydb</groupId>-->
+<!--				<artifactId>flyway-maven-plugin</artifactId>-->
+<!--				<version>11.8.0</version>-->
+<!--				<configuration>-->
+<!--					<url>jdbc:mariadb://172.21.0.2/kabootar_db</url>-->
+<!--					<user>root</user>-->
+<!--					<password>mypass</password>-->
+<!--					<locations>-->
+<!--						<location>classpath:db/migration</location>-->
+<!--					</locations>-->
+<!--				</configuration>-->
+<!--			</plugin>-->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-checkstyle-plugin</artifactId>
