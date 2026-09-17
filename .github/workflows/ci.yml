@@ -196,7 +196,6 @@ jobs:
           - gateway
           - admin
           - alert
-          - common
           - monitor
           - simulator
 
