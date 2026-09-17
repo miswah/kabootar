@@ -53,6 +53,7 @@ class DatabaseMigrationIT {
                         mariadb.getUsername(),
                         mariadb.getPassword()
                 )
+                .locations("classpath:db/migration")
                 .load()
                 .migrate();
     }

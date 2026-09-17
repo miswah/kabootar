@@ -125,9 +125,6 @@
 				<artifactId>flyway-maven-plugin</artifactId>
 				<version>11.8.0</version>
 				<configuration>
-					<url>jdbc:mariadb://172.21.0.2/kabootar_db</url>
-					<user>root</user>
-					<password>mypass</password>
 					<locations>
 						<location>classpath:db/migration</location>
 					</locations>
