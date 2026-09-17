@@ -195,6 +195,10 @@ jobs:
           - configuration
           - gateway
           - admin
+          - alert
+          - common
+          - monitor
+          - simulator
 
     permissions:
       contents: read
