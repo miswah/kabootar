@@ -206,6 +206,16 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
+      - name: Set up Java 25 & Maven
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '25'
+          cache: maven
+
+      - name: Build application JAR
+        run: mvn package -DskipTests
+
       - name: Build ${{ matrix.service }} container image
         uses: docker/build-push-action@v6
         with:
