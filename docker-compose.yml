@@ -139,6 +139,34 @@ services:
       - ./observability/grafana/dashboards:/var/lib/grafana/dashboards:ro
     networks:
       - kabootar-network
+  
+  otel-collector:
+    image: otel/opentelemetry-collector
+    container_name: kabootar-otel-collector
+
+    volumes:
+      - ./observability/otel-collector/otel-collector.yml:/etc/otelcol/config.yaml:ro
+
+    ports:
+      - "4317:4317"
+      - "4318:4318"
+
+    networks:
+      - kabootar-network
+  
+  tempo:
+    image: grafana/tempo:latest
+    container_name: kabootar-tempo
+    command: [ "-config.file=/etc/tempo/tempo.yml" ]
+
+    volumes:
+      - ./observability/tempo/tempo.yml:/etc/tempo/tempo.yml:ro
+
+    ports:
+      - "3200:3200"
+
+    networks:
+      - kabootar-network
 
 
 networks:
