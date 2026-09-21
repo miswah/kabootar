@@ -18,7 +18,9 @@
         <module name="admin" />
         <module name="monitor" />
         <module name="simulator" />
+        <module name="common" />
         <module name="kabootar" />
+        <module name="alert" />
       </profile>
     </annotationProcessing>
   </component>

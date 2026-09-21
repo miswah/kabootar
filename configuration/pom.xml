@@ -129,13 +129,30 @@
 			<scope>test</scope>
 		</dependency>
 
+		<dependency>
+			<groupId>org.testcontainers</groupId>
+			<artifactId>testcontainers</artifactId>
+			<version>2.0.5</version>
+			<scope>test</scope>
+		</dependency>
+
+
 		<!-- Testcontainers MariaDB -->
 		<dependency>
 			<groupId>org.testcontainers</groupId>
-			<artifactId>mariadb</artifactId>
-			<version>1.21.4</version>
+			<artifactId>testcontainers-mariadb</artifactId>
+			<version>2.0.1</version>
 			<scope>test</scope>
 		</dependency>
+
+		<!--Testcontainers Redis-->
+		<dependency>
+			<groupId>com.redis</groupId>
+			<artifactId>testcontainers-redis</artifactId>
+			<version>2.2.2</version>
+			<scope>test</scope>
+		</dependency>
+
 	</dependencies>
 	<dependencyManagement>
 		<dependencies>
@@ -143,13 +160,6 @@
 				<groupId>org.springframework.cloud</groupId>
 				<artifactId>spring-cloud-dependencies</artifactId>
 				<version>${spring-cloud.version}</version>
-				<type>pom</type>
-				<scope>import</scope>
-			</dependency>
-			<dependency>
-				<groupId>org.testcontainers</groupId>
-				<artifactId>testcontainers-bom</artifactId>
-				<version>2.0.5</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>

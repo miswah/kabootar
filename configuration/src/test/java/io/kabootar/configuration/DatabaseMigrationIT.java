@@ -1,10 +1,14 @@
 package io.kabootar.configuration;
 
+import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
-import org.testcontainers.containers.PostgreSQLContainer;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
+import org.testcontainers.containers.MariaDBContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
@@ -13,32 +17,52 @@ import javax.sql.DataSource;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+@SpringBootTest
 @Testcontainers
 class DatabaseMigrationIT {
 
     @Container
-    static PostgreSQLContainer<?> postgres =
-            new PostgreSQLContainer<>("postgres:16")
-                    .withDatabaseName("kabootar_db")
-                    .withUsername("postgres")
-                    .withPassword("postgres");
+    static MariaDBContainer<?> mariadb =
+            new MariaDBContainer<>("mariadb:10.11")
+                    .withDatabaseName("kabootar")
+                    .withUsername("root")
+                    .withPassword("rootpassword");
+
+    @DynamicPropertySource
+    static void databaseProperties(DynamicPropertyRegistry registry) {
+        registry.add("spring.datasource.url", mariadb::getJdbcUrl);
+        registry.add("spring.datasource.username", mariadb::getUsername);
+        registry.add("spring.datasource.password", mariadb::getPassword);
+    }
 
     private JdbcTemplate jdbcTemplate;
 
     @BeforeEach
     void setUp() {
         DataSource dataSource = new DriverManagerDataSource(
-                postgres.getJdbcUrl(),
-                postgres.getUsername(),
-                postgres.getPassword()
+                mariadb.getJdbcUrl(),
+                mariadb.getUsername(),
+                mariadb.getPassword()
         );
 
         jdbcTemplate = new JdbcTemplate(dataSource);
     }
 
+    private void runFlywayMigration() {
+        Flyway.configure()
+                .dataSource(
+                        mariadb.getJdbcUrl(),
+                        mariadb.getUsername(),
+                        mariadb.getPassword()
+                )
+                .locations("classpath:db/migration")
+                .load()
+                .migrate();
+    }
+
     @Test
     void freshDatabase_shouldContainAllTables() {
-        // TODO: run Flyway migration
+        runFlywayMigration();
 
         assertThat(tableExists("region")).isTrue();
         assertThat(tableExists("services")).isTrue();
@@ -47,7 +71,7 @@ class DatabaseMigrationIT {
 
     @Test
     void seedData_shouldContainExpectedRecords() {
-        // TODO: run Flyway migration
+        runFlywayMigration();
 
         Integer regions = jdbcTemplate.queryForObject(
                 "SELECT COUNT(*) FROM region",
@@ -71,14 +95,14 @@ class DatabaseMigrationIT {
 
     @Test
     void applicationRestart_shouldNotCreateDuplicates() {
-        // TODO: run Flyway migration
+        runFlywayMigration();
 
         int regionsBefore = count("region");
         int servicesBefore = count("services");
         int instancesBefore = count("service_instance");
 
-        // Simulate application restart
-        // TODO: run Flyway migration again
+        // Simulate application restart by running Flyway again.
+        runFlywayMigration();
 
         assertThat(count("region")).isEqualTo(regionsBefore);
         assertThat(count("services")).isEqualTo(servicesBefore);
@@ -87,14 +111,14 @@ class DatabaseMigrationIT {
 
     @Test
     void invalidRegion_shouldFail() {
-        // TODO: run Flyway migration
+        runFlywayMigration();
 
         assertThatThrownBy(() ->
                 jdbcTemplate.update("""
                     INSERT INTO service_instance
                         (id, `key`, service_id, region_id)
                     VALUES
-                        (gen_random_uuid(), 'invalid-region-instance',
+                        (UUID(), 'invalid-region-instance',
                          (SELECT id FROM services WHERE `key` = 'demo-service'),
                          'non-existing-region')
                     """)
@@ -103,14 +127,14 @@ class DatabaseMigrationIT {
 
     @Test
     void invalidService_shouldFail() {
-        // TODO: run Flyway migration
+        runFlywayMigration();
 
         assertThatThrownBy(() ->
                 jdbcTemplate.update("""
                     INSERT INTO service_instance
                         (id, `key`, service_id, region_id)
                     VALUES
-                        (gen_random_uuid(), 'invalid-service-instance',
+                        (UUID(), 'invalid-service-instance',
                          'non-existing-service',
                          (SELECT id FROM region WHERE `key` = 'ap-south-mumbai'))
                     """)
@@ -119,12 +143,12 @@ class DatabaseMigrationIT {
 
     @Test
     void duplicateRegionKey_shouldFail() {
-        // TODO: run Flyway migration
+        runFlywayMigration();
 
         assertThatThrownBy(() ->
                 jdbcTemplate.update("""
                     INSERT INTO region (id, `key`)
-                    VALUES (gen_random_uuid(), 'ap-south-mumbai')
+                    VALUES (UUID(), 'ap-south-mumbai')
                     """)
         ).isInstanceOf(Exception.class);
     }
@@ -140,7 +164,7 @@ class DatabaseMigrationIT {
         Integer count = jdbcTemplate.queryForObject("""
                 SELECT COUNT(*)
                 FROM information_schema.tables
-                WHERE table_schema = 'public'
+                WHERE table_schema = DATABASE()
                   AND table_name = ?
                 """,
                 Integer.class,
