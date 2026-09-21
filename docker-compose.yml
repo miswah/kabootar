@@ -100,6 +100,9 @@ services:
         condition: service_healthy
     networks:
       - kabootar-network
+    ports:
+      - "8082:8082"
+    
 
 # 7 Redis
   redis:
@@ -113,6 +116,51 @@ services:
       - redis_data:/data
     networks:
       - kabootar-network
+
+ # 8 Prometheus
+  prometheus:
+    image: prom/prometheus
+    container_name: kabootar-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./observability/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    depends_on:
+      - simulator-service
+    networks:
+      - kabootar-network
+
+# 9 Grafana 
+  grafana:
+    image: grafana/grafana
+    container_name: kabootar-grafana
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./observability/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./observability/grafana/dashboards:/var/lib/grafana/dashboards:ro
+    networks:
+      - kabootar-network
+
+# 10 Opentelementry Collector
+  otel-collector:
+    image: otel/opentelemetry-collector
+    container_name: kabootar-otel-collector
+    volumes:
+      - ./observability/otel-collector/otel-collector.yml:/etc/otelcol/config.yaml:ro
+    networks:
+      - kabootar-network
+
+# 11 Opentelementry Tempo
+  tempo:
+    image: grafana/tempo:latest
+    container_name: kabootar-tempo
+    command: [ "-config.file=/etc/tempo/tempo.yml" ]
+    volumes:
+      - ./observability/tempo/tempo.yml:/etc/tempo/tempo.yml:ro
+    networks:
+      - kabootar-network
+
 
 networks:
   kabootar-network:
