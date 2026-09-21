@@ -1,0 +1,1 @@
+sudo act pull_request -P ubuntu-latest=catthehacker/ubuntu:full-latest --artifact-server-path /tmp/artifacts -s GITHUB_TOKEN="radomstring"
