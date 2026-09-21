@@ -17,12 +17,12 @@ public class RedisTest {
 
     @Container
     private static final RedisContainer REDIS_CONTAINER = new RedisContainer(DockerImageName.parse("redis:6.2.6"))
-            .withExposedPorts(6379);
+            .withExposedPorts(6380);
 
     @DynamicPropertySource
-    private static void cacheProperties(DynamicPropertyRegistry registry) {
+    static void cacheProperties(DynamicPropertyRegistry registry) {
         registry.add("spring.data.redis.host", REDIS_CONTAINER::getHost);
-        registry.add("spring.data.redis.port", () -> REDIS_CONTAINER.getMappedPort(6379));
+        registry.add("spring.data.redis.port", () -> REDIS_CONTAINER.getMappedPort(6380));
     }
 
     @Test
