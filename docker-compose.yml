@@ -116,7 +116,8 @@ services:
       - redis_data:/data
     networks:
       - kabootar-network
-  
+
+ # 8 Prometheus
   prometheus:
     image: prom/prometheus
     container_name: kabootar-prometheus
@@ -129,7 +130,7 @@ services:
     networks:
       - kabootar-network
 
-# 8 Grafana 
+# 9 Grafana 
   grafana:
     image: grafana/grafana
     container_name: kabootar-grafana
@@ -141,7 +142,7 @@ services:
     networks:
       - kabootar-network
 
-# 9 Opentelementry Collector
+# 10 Opentelementry Collector
   otel-collector:
     image: otel/opentelemetry-collector
     container_name: kabootar-otel-collector
@@ -150,7 +151,7 @@ services:
     networks:
       - kabootar-network
 
-# 10 Opentelementry Tempo
+# 11 Opentelementry Tempo
   tempo:
     image: grafana/tempo:latest
     container_name: kabootar-tempo
