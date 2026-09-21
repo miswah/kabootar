@@ -1,0 +1,10 @@
+global:
+  scrape_interval: 2s
+
+scrape_configs:
+
+  - job_name: "simulator"
+    metrics_path: "/simulator/actuator/prometheus"
+    static_configs:
+      - targets:
+          - "simulator-service:8082"
