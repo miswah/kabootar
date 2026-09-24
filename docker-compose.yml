@@ -107,10 +107,10 @@ services:
 # 7 Redis
   redis:
     image: redis:7.4-alpine
-    container_name: my-redis
+    container_name: kabootar-cache
     restart: always
     ports:
-      - "6379:6379"
+      - "6378:6379"
     command: redis-server --requirepass rootpassword --appendonly yes
     volumes:
       - redis_data:/data
