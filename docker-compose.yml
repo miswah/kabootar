@@ -10,14 +10,22 @@ services:
     volumes:
       - ./mariadb/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
     healthcheck:
-      test: ["CMD", "mariadb-admin", "--host=127.0.0.1", "--user=root", "--password=rootpassword", "ping"]
+      test:
+        [
+          "CMD",
+          "mariadb-admin",
+          "--host=127.0.0.1",
+          "--user=root",
+          "--password=rootpassword",
+          "ping"
+        ]
       interval: 5s
       timeout: 5s
       retries: 10
     networks:
       - kabootar-network
 
-#1 Admin Panel
+  # 1 Admin Panel
   admin-service:
     build: ./admin
     container_name: admin-service
@@ -28,10 +36,24 @@ services:
     depends_on:
       kabootar-db:
         condition: service_healthy
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "wget --no-verbose --tries=1 --spider http://localhost:8080/actuator/health/readiness || exit 1"
+        ]
+      # interval: how often to 
+      interval: 10s
+      # timeout: max time allowed for one check
+      timeout: 5s
+      # retries: consecutive failures before unhealthy
+      retries: 5
+      # start_period: startup grace period before failures count
+      start_period: 30s
     networks:
       - kabootar-network
 
-#2 Alert System
+  # 2 Alert System
   alert-service:
     build: ./alert
     container_name: alert-service
@@ -42,10 +64,20 @@ services:
     depends_on:
       kabootar-db:
         condition: service_healthy
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "wget --no-verbose --tries=1 --spider http://localhost:8080/actuator/health/readiness || exit 1"
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
     networks:
       - kabootar-network
 
-# 3 Configuration Services
+  # 3 Configuration Service
   configuration-service:
     build: ./configuration
     container_name: configuration-service
@@ -56,10 +88,20 @@ services:
     depends_on:
       kabootar-db:
         condition: service_healthy
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "wget --no-verbose --tries=1 --spider http://localhost:8080/actuator/health/readiness || exit 1"
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
     networks:
       - kabootar-network
 
-# 4 Gateway Services
+  # 4 Gateway Service
   gateway-service:
     build: ./gateway
     container_name: gateway-service
@@ -70,10 +112,20 @@ services:
     depends_on:
       kabootar-db:
         condition: service_healthy
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "wget --no-verbose --tries=1 --spider http://localhost:8080/actuator/health/readiness || exit 1"
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
     networks:
       - kabootar-network
 
-# 5 Monitor Service
+  # 5 Monitor Service
   monitor-service:
     build: ./monitor
     container_name: monitor-service
@@ -84,10 +136,20 @@ services:
     depends_on:
       kabootar-db:
         condition: service_healthy
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "wget --no-verbose --tries=1 --spider http://localhost:8080/actuator/health/readiness || exit 1"
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
     networks:
       - kabootar-network
 
-# 6 Simulator Service
+  # 6 Simulator Service
   simulator-service:
     build: ./simulator
     container_name: simulator-service
@@ -98,13 +160,22 @@ services:
     depends_on:
       kabootar-db:
         condition: service_healthy
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "wget --no-verbose --tries=1 --spider http://localhost:8082/actuator/health/readiness || exit 1"
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
     networks:
       - kabootar-network
     ports:
       - "8082:8082"
-    
 
-# 7 Redis
+  # 7 Redis
   redis:
     image: redis:7.4-alpine
     container_name: kabootar-cache
@@ -116,8 +187,13 @@ services:
       - redis_data:/data
     networks:
       - kabootar-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "rootpassword", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
 
- # 8 Prometheus
+  # 8 Prometheus
   prometheus:
     image: prom/prometheus
     container_name: kabootar-prometheus
@@ -126,11 +202,12 @@ services:
     volumes:
       - ./observability/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
     depends_on:
-      - simulator-service
+      simulator-service:
+        condition: service_healthy
     networks:
       - kabootar-network
 
-# 9 Grafana 
+  # 9 Grafana
   grafana:
     image: grafana/grafana
     container_name: kabootar-grafana
@@ -142,7 +219,7 @@ services:
     networks:
       - kabootar-network
 
-# 10 Opentelementry Collector
+  # 10 OpenTelemetry Collector
   otel-collector:
     image: otel/opentelemetry-collector
     container_name: kabootar-otel-collector
@@ -151,11 +228,11 @@ services:
     networks:
       - kabootar-network
 
-# 11 Opentelementry Tempo
+  # 11 OpenTelemetry Tempo
   tempo:
     image: grafana/tempo:latest
     container_name: kabootar-tempo
-    command: [ "-config.file=/etc/tempo/tempo.yml" ]
+    command: ["-config.file=/etc/tempo/tempo.yml"]
     volumes:
       - ./observability/tempo/tempo.yml:/etc/tempo/tempo.yml:ro
     networks:
