@@ -1,0 +1,188 @@
+
+services:
+  # Database Container (MariaDB)
+  kabootar-db:
+    image: mariadb:10.11
+    container_name: kabootar-db
+    ports:
+      - "3307:3306"
+    environment:
+      MARIADB_ROOT_PASSWORD: rootpassword
+    volumes:
+      - ./mariadb/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "mariadb-admin",
+          "--host=127.0.0.1",
+          "--user=root",
+          "--password=rootpassword",
+          "ping"
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - kabootar-network
+
+  # 1 Admin Panel
+  admin-service:
+    build: ./admin
+    container_name: admin-service
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mariadb://kabootar-db:3306/kabootar_db?createDatabaseIfNotExist=true&retriesAllDown=10&retryInterval=2
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=rootpassword
+    depends_on:
+      kabootar-db:
+        condition: service_healthy
+    networks:
+      - kabootar-network
+    ports:
+      - "8091:8080"
+
+  # 2 Alert System
+  alert-service:
+    build: ./alert
+    container_name: alert-service
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mariadb://kabootar-db:3306/kabootar_db?createDatabaseIfNotExist=true&retriesAllDown=10&retryInterval=2
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=rootpassword
+    depends_on:
+      kabootar-db:
+        condition: service_healthy
+    networks:
+      - kabootar-network
+    ports:
+      - "8092:8080"
+
+  # 3 Configuration Service
+  configuration-service:
+    build: ./configuration
+    container_name: configuration-service
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mariadb://kabootar-db:3306/kabootar_db?createDatabaseIfNotExist=true&retriesAllDown=10&retryInterval=2
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=rootpassword
+    depends_on:
+      kabootar-db:
+        condition: service_healthy
+    networks:
+      - kabootar-network
+    ports:
+      - "8093:8080"
+
+  # 4 Gateway Service
+  gateway-service:
+    build: ./gateway
+    container_name: gateway-service
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mariadb://kabootar-db:3306/kabootar_db?createDatabaseIfNotExist=true&retriesAllDown=10&retryInterval=2
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=rootpassword
+    depends_on:
+      kabootar-db:
+        condition: service_healthy
+    networks:
+      - kabootar-network
+    ports:
+      - "8090:8080"
+
+  # 5 Monitor Service
+  monitor-service:
+    build: ./monitor
+    container_name: monitor-service
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mariadb://kabootar-db:3306/kabootar_db?createDatabaseIfNotExist=true&retriesAllDown=10&retryInterval=2
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=rootpassword
+    depends_on:
+      kabootar-db:
+        condition: service_healthy
+    networks:
+      - kabootar-network
+    ports:
+      - "8094:8080"
+
+  # 6 Simulator Service
+  # Keep simulator port unchanged.
+  simulator-service:
+    build: ./simulator
+    container_name: simulator-service
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mariadb://kabootar-db:3306/kabootar_db?createDatabaseIfNotExist=true&retriesAllDown=10&retryInterval=2
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=rootpassword
+    depends_on:
+      kabootar-db:
+        condition: service_healthy
+    networks:
+      - kabootar-network
+    ports:
+      - "8082:8082"
+
+  # 7 Redis
+  redis:
+    image: redis:7.4-alpine
+    container_name: kabootar-cache
+    restart: always
+    ports:
+      - "6378:6379"
+    command: redis-server --requirepass rootpassword --appendonly yes
+    volumes:
+      - redis_data:/data
+    networks:
+      - kabootar-network
+
+  # 8 Prometheus
+  prometheus:
+    image: prom/prometheus
+    container_name: kabootar-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./observability/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    depends_on:
+      - simulator-service
+    networks:
+      - kabootar-network
+
+  # 9 Grafana
+  grafana:
+    image: grafana/grafana
+    container_name: kabootar-grafana
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./observability/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./observability/grafana/dashboards:/var/lib/grafana/dashboards:ro
+    networks:
+      - kabootar-network
+
+  # 10 OpenTelemetry Collector
+  otel-collector:
+    image: otel/opentelemetry-collector
+    container_name: kabootar-otel-collector
+    volumes:
+      - ./observability/otel-collector/otel-collector.yml:/etc/otelcol/config.yaml:ro
+    networks:
+      - kabootar-network
+
+  # 11 OpenTelemetry Tempo
+  tempo:
+    image: grafana/tempo:latest
+    container_name: kabootar-tempo
+    command: ["-config.file=/etc/tempo/tempo.yml"]
+    volumes:
+      - ./observability/tempo/tempo.yml:/etc/tempo/tempo.yml:ro
+    networks:
+      - kabootar-network
+
+networks:
+  kabootar-network:
+    driver: bridge
+
+volumes:
+  redis_data:
