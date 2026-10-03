@@ -38,6 +38,19 @@
         <failsafe.plugin.version>3.5.2</failsafe.plugin.version>
     </properties>
 
+    <dependencies>
+        <dependency>
+            <groupId>tools.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
+            <version>3.2.3</version>
+        </dependency>
+        <dependency>
+            <groupId>tools.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>3.2.3</version>
+        </dependency>
+    </dependencies>
+
     <build>
         <plugins>
             <plugin>
