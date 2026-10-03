@@ -1,7 +1,7 @@
 package io.kabootar.activityLog.dto;
 
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
 import io.kabootar.activityLog.enums.Outcome;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
