@@ -1,12 +1,10 @@
 package io.kabootar.activityLog.aop;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import io.kabootar.activityLog.dto.ActivityLogEntry;
-import io.kabootar.activityLog.interfaces.ActivityLogService;
-import io.kabootar.activityLog.models.ActivityLogModel;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import lombok.extern.slf4j.Slf4j;
+import java.security.Principal;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import org.apache.tomcat.util.net.openssl.ciphers.Authentication;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -21,16 +19,19 @@ import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.security.Principal;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import io.kabootar.activityLog.dto.ActivityLogEntry;
+import io.kabootar.activityLog.interfaces.ActivityLogService;
+import io.kabootar.activityLog.models.ActivityLogModel;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.node.ObjectNode;
 
 @Aspect
 @Component
@@ -203,7 +204,7 @@ public class ActivityLogAspect {
 
         try {
             return new ObjectMapper().writeValueAsString(safeArgs);
-        } catch (JsonProcessingException e) {
+        } catch (JacksonException e) {
             return "[error serializing params]";
         }
     }
