@@ -1,4 +1,4 @@
-CREATE TABLE traffic_policy (
+CREATE TABLE IF NOT EXISTS traffic_policy (
     id CHAR(36) NOT NULL,
     revision_id CHAR(36) NOT NULL,
     strategy VARCHAR(64) NOT NULL,

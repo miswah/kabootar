@@ -5,6 +5,9 @@ import jakarta.validation.constraints.Size;
 
 import java.util.UUID;
 
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
+
 @Entity
 @Table(name="region", uniqueConstraints = {
         @UniqueConstraint(name="uk_region_key", columnNames="key" )
@@ -13,6 +16,7 @@ public class Region extends Auditable {
 
     @Id
     @GeneratedValue(strategy= GenerationType.UUID)
+    @JdbcTypeCode(SqlTypes.CHAR)
     private UUID id;
 
     @Size(max=255, message="Key size can't exceed 255 characters")

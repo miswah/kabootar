@@ -1,4 +1,4 @@
-CREATE TABLE configuration_audit_event (
+CREATE TABLE IF NOT EXISTS configuration_audit_event (
     id CHAR(36) NOT NULL,
     revision_id CHAR(36) NOT NULL,
     event VARCHAR(64) NOT NULL,
