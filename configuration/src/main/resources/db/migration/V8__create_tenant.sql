@@ -12,4 +12,4 @@ CREATE TABLE IF NOT EXISTS tenant (
     CONSTRAINT fk_tenant_revision FOREIGN KEY (revision_id)
         REFERENCES configuration_revision(id) ON DELETE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARACTER SET utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
+CREATE INDEX idx_tenant_enabled ON tenant(revision_id, enabled);
