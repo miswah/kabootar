@@ -1,4 +1,4 @@
-CREATE TABLE rate_limit_policy (
+CREATE TABLE IF NOT EXISTS rate_limit_policy (
     id CHAR(36) NOT NULL,
     revision_id CHAR(36) NOT NULL,
     requests_per_window BIGINT NOT NULL,

@@ -1,4 +1,4 @@
-CREATE TABLE security_policy (
+CREATE TABLE IF NOT EXISTS security_policy (
     id CHAR(36) NOT NULL,
     revision_id CHAR(36) NOT NULL,
     authentication_required BOOLEAN NOT NULL DEFAULT TRUE,

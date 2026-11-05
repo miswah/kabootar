@@ -1,4 +1,4 @@
-CREATE TABLE configuration_revision (
+CREATE TABLE IF NOT EXISTS configuration_revision (
     id CHAR(36) NOT NULL,
     revision_number BIGINT NOT NULL,
     status VARCHAR(32) NOT NULL,

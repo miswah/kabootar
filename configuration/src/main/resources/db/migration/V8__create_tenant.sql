@@ -1,4 +1,4 @@
-CREATE TABLE tenant (
+CREATE TABLE IF NOT EXISTS tenant (
     id CHAR(36) NOT NULL,
     revision_id CHAR(36) NOT NULL,
     display_name VARCHAR(255) NOT NULL,

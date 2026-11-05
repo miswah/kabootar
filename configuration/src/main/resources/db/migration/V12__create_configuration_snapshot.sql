@@ -1,4 +1,4 @@
-CREATE TABLE configuration_snapshot (
+CREATE TABLE IF NOT EXISTS configuration_snapshot (
     id CHAR(36) NOT NULL,
     revision_id CHAR(36) NOT NULL,
     schema_version VARCHAR(32) NOT NULL,
